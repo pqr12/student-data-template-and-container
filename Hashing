@@ -1,0 +1,263 @@
+
+# Account Management System Using Hashing
+
+# Account Class
+class Account:
+    def __init__(self, acc_no, name, balance):
+        self.acc_no = acc_no
+        self.name = name
+        self.balance = balance
+
+    def __str__(self):
+        return f"{self.acc_no} | {self.name} | Rs.{self.balance:.2f}"
+
+
+# ==========================================
+# 1. SEPARATE CHAINING
+# ==========================================
+
+class ChainingHash:
+
+    def __init__(self, size=7):
+        self.size = size
+        self.table = [[] for _ in range(size)]
+
+    # Hash Function
+    def h(self, key):
+        return key % self.size
+
+    # Search Account
+    def search(self, key):
+        index = self.h(key)
+
+        for account in self.table[index]:
+            if account.acc_no == key:
+                return account
+
+        return None
+
+    # Insert Account
+    def insert(self, acc):
+        if self.search(acc.acc_no):
+            print("Duplicate account number!")
+            return
+
+        index = self.h(acc.acc_no)
+        self.table[index].append(acc)
+
+        print("Account inserted successfully!")
+
+    # Delete Account
+    def delete(self, key):
+        index = self.h(key)
+        account = self.search(key)
+
+        if account:
+            self.table[index].remove(account)
+            return True
+
+        return False
+
+    # Display Hash Table
+    def display(self):
+        print("\nHash Table Using Chaining:")
+
+        for i, chain in enumerate(self.table):
+            print(
+                i,
+                "->",
+                " -> ".join(str(a) for a in chain) or "empty"
+            )
+
+
+# ==========================================
+# 2. LINEAR AND QUADRATIC PROBING
+# ==========================================
+
+class OpenAddressHash:
+
+    DELETED = object()
+
+    def __init__(self, size=7, mode="linear"):
+        self.size = size
+        self.mode = mode
+        self.table = [None] * size
+
+    # Probe Function
+    def probe(self, key, i):
+
+        if self.mode == "linear":
+            step = i
+
+        else:
+            step = i * i
+
+        return (key % self.size + step) % self.size
+
+    # Search Account
+    def search(self, key):
+
+        for i in range(self.size):
+
+            index = self.probe(key, i)
+            slot = self.table[index]
+
+            if slot is None:
+                return None
+
+            if slot is not self.DELETED and slot.acc_no == key:
+                return slot
+
+        return None
+
+    # Insert Account
+    def insert(self, acc):
+
+        if self.search(acc.acc_no):
+            print("Duplicate account number!")
+            return
+
+        for i in range(self.size):
+
+            index = self.probe(acc.acc_no, i)
+
+            if (
+                self.table[index] is None
+                or self.table[index] is self.DELETED
+            ):
+
+                self.table[index] = acc
+                print("Account inserted successfully!")
+                return
+
+        print("Hash table is full / no free slot found!")
+
+    # Delete Account
+    def delete(self, key):
+
+        for i in range(self.size):
+
+            index = self.probe(key, i)
+            slot = self.table[index]
+
+            if slot is None:
+                return False
+
+            if slot is self.DELETED:
+                continue
+
+            if slot.acc_no == key:
+                self.table[index] = self.DELETED
+                return True
+
+        return False
+
+    # Display Hash Table
+    def display(self):
+
+        print("\nHash Table Using Open Addressing:")
+
+        for i, slot in enumerate(self.table):
+
+            if slot is None:
+                print(i, "-> empty")
+
+            elif slot is self.DELETED:
+                print(i, "-> deleted")
+
+            else:
+                print(i, "->", slot)
+
+
+# ==========================================
+# MAIN PROGRAM
+# ==========================================
+
+def main():
+
+    print("\n===== ACCOUNT MANAGEMENT SYSTEM =====")
+
+    print("1. Separate Chaining")
+    print("2. Linear Probing")
+    print("3. Quadratic Probing")
+
+    c = input("Choose method: ")
+
+    if c == "1":
+        ht = ChainingHash(7)
+
+    elif c == "2":
+        ht = OpenAddressHash(7, "linear")
+
+    elif c == "3":
+        ht = OpenAddressHash(7, "quadratic")
+
+    else:
+        print("Invalid method!")
+        return
+
+    while True:
+
+        print("\n===== MENU =====")
+        print("1. Insert Account")
+        print("2. Search Account")
+        print("3. Delete Account")
+        print("4. Display Hash Table")
+        print("5. Exit")
+
+        ch = input("Enter choice: ")
+
+        try:
+
+            if ch == "1":
+
+                acc_no = int(input("Account No: "))
+                name = input("Name: ")
+                balance = float(input("Balance: "))
+
+                if balance < 0:
+                    print("Balance cannot be negative!")
+                    continue
+
+                account = Account(acc_no, name, balance)
+                ht.insert(account)
+
+            elif ch == "2":
+
+                key = int(input("Enter Account No: "))
+                result = ht.search(key)
+
+                if result:
+                    print("Account Found:", result)
+                else:
+                    print("Record not found.")
+
+            elif ch == "3":
+
+                key = int(input("Enter Account No: "))
+
+                if ht.delete(key):
+                    print("Account deleted successfully!")
+                else:
+                    print("Record not found.")
+
+            elif ch == "4":
+
+                ht.display()
+
+            elif ch == "5":
+
+                print("Exiting program...")
+                break
+
+            else:
+
+                print("Invalid choice!")
+
+        except ValueError:
+            print("Please enter valid numeric values!")
+
+
+# Run Main Program
+if __name__ == "__main__":
+    main()
