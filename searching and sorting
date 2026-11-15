@@ -1,0 +1,169 @@
+#include <iostream>
+#include <string>
+using namespace std;
+// Structure for Book
+struct Book
+{
+int bookID;
+string title;
+string author;
+string status;
+};
+// Display Books
+void display(Book b[], int n)
+{
+cout << "\n---------------------------------------------\n";
+cout << "ID\tTitle\t\tAuthor\t\tStatus\n";
+cout << "---------------------------------------------\n";
+for (int i = 0; i < n; i++)
+{
+cout << b[i].bookID << "\t"
+<< b[i].title << "\t\t"
+<< b[i].author << "\t\t"
+<< b[i].status << endl;
+}
+}// Linear Search by Book ID
+void linearSearch(Book b[], int n, int id)
+{
+for (int i = 0; i < n; i++)
+{
+if (b[i].bookID == id)
+{
+cout << "\nBook Found!\n";
+cout << "Book ID : " << b[i].bookID << endl;
+cout << "Title : " << b[i].title << endl;
+cout << "Author : " << b[i].author << endl;
+cout << "Status : " << b[i].status << endl;
+return;
+}
+}
+cout << "\nBook Not Found!\n";
+}
+// Bubble Sort by Book ID
+void bubbleSort(Book b[], int n)
+{
+for (int i = 0; i < n - 1; i++)
+{
+for (int j = 0; j < n - i - 1; j++)
+{
+if (b[j].bookID > b[j + 1].bookID)
+{Book temp = b[j];
+b[j] = b[j + 1];
+b[j + 1] = temp;
+}
+}
+}
+cout << "\nBooks sorted by Book ID.\n";
+}
+// Binary Search by Book ID
+void binarySearch(Book b[], int n, int id)
+{
+int low = 0;
+int high = n - 1;
+while (low <= high)
+{
+int mid = (low + high) / 2;
+if (b[mid].bookID == id)
+{
+cout << "\nBook Found!\n";
+cout << "Book ID : " << b[mid].bookID << endl;
+cout << "Title : " << b[mid].title << endl;
+cout << "Author : " << b[mid].author << endl;
+cout << "Status : " << b[mid].status << endl;
+return;
+}else if (b[mid].bookID < id)
+{
+low = mid + 1;
+}
+else
+{
+high = mid - 1;
+}
+}
+cout << "\nBook Not Found!\n";
+}
+// Insertion Sort by Book Title
+void insertionSort(Book b[], int n)
+{
+for (int i = 1; i < n; i++)
+{
+Book key = b[i];
+int j = i - 1;
+while (j >= 0 && b[j].title > key.title)
+{
+b[j + 1] = b[j];
+j--;
+}
+b[j + 1] = key;
+}cout << "\nBooks sorted alphabetically by Title.\n";
+}
+// Main Function
+int main()
+{
+Book b[50];
+int n, choice, id;
+cout << "Enter number of books: ";
+cin >> n;
+if (n < 1 || n > 50)
+{
+cout << "Invalid number of books!";
+return 0;
+}
+// Input Book Details
+for (int i = 0; i < n; i++)
+{
+cout << "\nEnter details of Book " << i + 1 << ":\n";
+cout << "Book ID: ";
+cin >> b[i].bookID;
+cin.ignore();
+cout << "Book Title: ";getline(cin, b[i].title);
+cout << "Author Name: ";
+getline(cin, b[i].author);
+cout << "Availability Status: ";
+getline(cin, b[i].status);
+}
+// Menu
+do
+{
+cout << "\n\n========== LIBRARY MENU ==========\n";
+cout << "1. Display Books\n";
+cout << "2. Linear Search\n";
+cout << "3. Binary Search\n";
+cout << "4. Bubble Sort by Book ID\n";
+cout << "5. Insertion Sort by Book Title\n";
+cout << "6. Exit\n";
+cout << "==================================\n";
+cout << "Enter your choice: ";
+cin >> choice;
+switch (choice)
+{
+case 1:
+display(b, n);
+break;case 2:
+cout << "Enter Book ID to search: ";
+cin >> id;
+linearSearch(b, n, id);
+break;
+case 3:
+// Binary Search requires sorted Book IDs
+bubbleSort(b, n);
+cout << "Enter Book ID to search: ";
+cin >> id;
+binarySearch(b, n, id);
+break;
+case 4:
+bubbleSort(b, n);
+display(b, n);
+break;
+case 5:
+insertionSort(b, n);
+display(b, n);
+break;
+case 6:
+cout << "\nThank you!\n";break;
+default:
+cout << "\nInvalid Choice!\n";
+}
+} while (choice != 6);
+return 0;
+}
