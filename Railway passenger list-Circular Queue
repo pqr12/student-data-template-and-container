@@ -1,0 +1,237 @@
+
+#include <iostream>
+#include <string>
+#include <new>
+using namespace std;
+
+// Structure of a Node
+struct Node
+{
+    int passengerID;
+    string passengerName;
+    Node* next;
+};
+
+// Circular Queue Class
+class CircularQueue
+{
+private:
+    Node* front;
+    Node* rear;
+
+public:
+
+    // Constructor
+    CircularQueue()
+    {
+        front = NULL;
+        rear = NULL;
+    }
+
+    // Check whether Queue is Empty
+    bool isEmpty()
+    {
+        return front == NULL;
+    }
+
+    // Check whether Queue is Full
+    bool isFull()
+    {
+        Node* temp = new(nothrow) Node;
+
+        if (temp == NULL)
+            return true;
+
+        delete temp;
+        return false;
+    }
+
+    // Enqueue Operation
+    void enqueue(int id, string name)
+    {
+        if (isFull())
+        {
+            cout << "Queue Overflow! Waiting list is full.\n";
+            return;
+        }
+
+        Node* newNode = new(nothrow) Node;
+
+        if (newNode == NULL)
+        {
+            cout << "Memory allocation failed!\n";
+            return;
+        }
+
+        newNode->passengerID = id;
+        newNode->passengerName = name;
+
+        if (front == NULL)
+        {
+            front = newNode;
+            rear = newNode;
+            rear->next = front;
+        }
+        else
+        {
+            rear->next = newNode;
+            rear = newNode;
+            rear->next = front;
+        }
+
+        cout << "Passenger added to waiting list successfully.\n";
+    }
+
+    // Dequeue Operation
+    void dequeue()
+    {
+        if (isEmpty())
+        {
+            cout << "Queue Underflow! No passenger in waiting list.\n";
+            return;
+        }
+
+        Node* temp = front;
+
+        cout << "Ticket confirmed for Passenger ID: "
+             << front->passengerID << endl;
+
+        cout << "Passenger Name: "
+             << front->passengerName << endl;
+
+        if (front == rear)
+        {
+            front = NULL;
+            rear = NULL;
+        }
+        else
+        {
+            front = front->next;
+            rear->next = front;
+        }
+
+        delete temp;
+    }
+
+    // Display Waiting List
+    void display()
+    {
+        if (isEmpty())
+        {
+            cout << "Waiting list is empty.\n";
+            return;
+        }
+
+        Node* temp = front;
+
+        cout << "\nRailway Waiting List:\n";
+        cout << "Passenger ID\tPassenger Name\n";
+
+        do
+        {
+            cout << temp->passengerID << "\t\t"
+                 << temp->passengerName << endl;
+
+            temp = temp->next;
+
+        } while (temp != front);
+    }
+
+    // Check Queue Status
+    void checkStatus()
+    {
+        if (isEmpty())
+        {
+            cout << "Queue Status: EMPTY\n";
+        }
+        else if (isFull())
+        {
+            cout << "Queue Status: FULL (Memory unavailable)\n";
+        }
+        else
+        {
+            cout << "Queue Status: NOT EMPTY / AVAILABLE\n";
+        }
+    }
+
+    // Destructor
+    ~CircularQueue()
+    {
+        while (!isEmpty())
+        {
+            Node* temp = front;
+
+            if (front == rear)
+            {
+                front = NULL;
+                rear = NULL;
+            }
+            else
+            {
+                front = front->next;
+                rear->next = front;
+            }
+
+            delete temp;
+        }
+    }
+};
+
+// Main Function
+int main()
+{
+    CircularQueue q;
+
+    int choice;
+    int id;
+    string name;
+
+    do
+    {
+        cout << "\n===== RAILWAY RESERVATION SYSTEM =====\n";
+
+        cout << "1. Add Passenger to Waiting List\n";
+        cout << "2. Confirm Ticket / Remove Passenger\n";
+        cout << "3. Display Waiting List\n";
+        cout << "4. Check Queue Status\n";
+        cout << "5. Exit\n";
+
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice)
+        {
+            case 1:
+                cout << "Enter Passenger ID: ";
+                cin >> id;
+
+                cout << "Enter Passenger Name: ";
+                cin >> name;
+
+                q.enqueue(id, name);
+                break;
+
+            case 2:
+                q.dequeue();
+                break;
+
+            case 3:
+                q.display();
+                break;
+
+            case 4:
+                q.checkStatus();
+                break;
+
+            case 5:
+                cout << "Exiting Railway Reservation System.\n";
+                break;
+
+            default:
+                cout << "Invalid choice! Please try again.\n";
+        }
+
+    } while (choice != 5);
+
+    return 0;
+}
